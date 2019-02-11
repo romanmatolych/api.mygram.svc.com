@@ -13,7 +13,7 @@ Use [Docker](https://www.docker.com/) to run a server in a container.
 For MacOS or Linux:
 
 ```bash
-docker run --name api-mygram -v $(pwd):/usr/src/api -ti --rm -p 3000:3000 -w /usr/src/api node:8.15-alpine DEBUG=api.mygram.svc.com:* npm start
+docker run --env DEBUG=api.mygram.svc.com:* --name api-mygram -v $(pwd):/usr/src/api -ti --rm -p 3000:3000 -w /usr/src/api node:8.15-alpine npm start
 ```
 
 On Windows, use this command:
