@@ -28,9 +28,9 @@ You can open `http://localhost:3000` now.
 
 ### Healthcheck
 
-A simple /health endpoint
+A simple /healthcheck endpoint
 
-- GET /health
+- GET /healthcheck
 
 Response body:
 
