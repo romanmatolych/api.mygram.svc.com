@@ -8,6 +8,9 @@ var app = require('../app');
 var debug = require('debug')('api.mygram.svc.com:server');
 var http = require('http');
 
+// Read .env file, assign it to process.env
+require('dotenv').config();
+
 /**
  * Get port from environment and store in Express.
  */

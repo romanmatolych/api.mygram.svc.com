@@ -8,6 +8,18 @@ RESTfull service for [mygram](https://gitlab.com/romanmatolych/mygram.com)
 
 ## Installation
 
+To launch the application with MongoDB:
+
+```bash
+docker-compose up
+```
+
+In the end, if you want to remove all the information including data volume of the database, use:
+
+```bash
+docker-compose down 
+```
+
 Use [Docker](https://www.docker.com/) to run a server in a container.
 
 For MacOS or Linux:

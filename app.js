@@ -4,6 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+var mongoose = require('mongoose');
+var debug = require('debug')('api.mygram.svc.com:app');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const healthRouter = require('./routes/health');
@@ -23,6 +26,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/healthcheck', healthRouter);
+
+// Connect to MongoDB
+const mongoUri = process.env.MONGO_URI;
+mongoose.connect(mongoUri, {useNewUrlParser: true});
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
+db.on('error', console.log.bind(console, 'Mongoose connection error:'));
+db.once('open', function () {
+  debug('Mongoose connection opened');
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
