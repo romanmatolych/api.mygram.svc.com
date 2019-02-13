@@ -1,31 +1,23 @@
 var createError = require('http-errors');
 var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
+// var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var mongoose = require('mongoose');
 var debug = require('debug')('api.mygram.svc.com:app');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 const healthRouter = require('./routes/health');
+const usersRouter = require('./routes/users');
 
 var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(cookieParser());
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/healthcheck', healthRouter);
+app.use('/users', usersRouter);
 
 // Connect to MongoDB
 const mongoUri = process.env.MONGO_URI;
@@ -44,13 +36,15 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  if (res.headersSent) {
+    return next(err)
+  }
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  if (req.xhr) {
+    res.status(err.status || 500).json({error: err});
+  } else {
+    next(err);
+  }
 });
 
 module.exports = app;
