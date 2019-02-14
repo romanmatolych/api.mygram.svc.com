@@ -5,15 +5,11 @@ const Post = require('../models/post');
 
 // GET post
 exports.getPostPage = function(req, res, next) {
-    Post.find({blogId: res.locals.blogId}).sort({createdAt: 1}).exec(function(err, blogPosts) {
+    Post.findById(res.locals.postId, function(err, post) {
         if (err) return next(err);
+        if (post === null) return next(createError(404, 'Post Not Found'));
 
-        const i = parseInt(req.params.index);
-        if (typeof blogPosts[i] === 'undefined') {
-            return next(createError(404, 'Post Not Found'));
-        } else {
-            res.json({post: blogPosts[i]});
-        } 
+        res.json({post});
     });
 };
 
@@ -52,10 +48,11 @@ exports.createNewPost = [
         Post.create(post, function(err, newPost) {
             if (err) return next(err);
 
-            newPost.getIndex(res.locals.blogId, function(err, i) {
+            newPost.getIndex(function(err, i) {
                 if (err) return next(err);
+                if (i === -1) return next(createError(500));
 
-                res.redirect(201, req.originalUrl + `/${i}`);
+                res.redirect(201, newPost.baseUrl + `/${i}`);
             });
         });
     }
@@ -75,7 +72,7 @@ exports.updatePost = [
         const errors = validationResult(req);
 
         const post = {
-            _id: req.params.id,
+            _id: res.locals.postId,
             desc: req.body.desc,
             imgUrl: req.body.imgUrl
         };
@@ -84,7 +81,7 @@ exports.updatePost = [
             return res.status(400).json({errors: errors.array(), post});
         }
 
-        Post.findByIdAndUpdate(req.params.id, post, function (err) {
+        Post.findByIdAndUpdate(res.locals.postId, post, function (err) {
             if (err) return next(err);
 
             res.redirect(200, req.originalUrl);
@@ -93,18 +90,10 @@ exports.updatePost = [
 ];
 
 exports.deletePost = function(req, res, next) {
-    Post.find({blogId: res.locals.blogId}).sort({createdAt: 1}).exec(function(err, blogPosts) {
+    Post.findByIdAndRemove(res.locals.postId, function(err, post) {
         if (err) return next(err);
+        if (post === null) return next(createError(404, 'Post Not Found'));
 
-        const i = parseInt(req.params.index);
-        if (typeof blogPosts[i] === 'undefined') {
-            return next(createError(404, 'Post Not Found'));
-        } else {
-            blogPosts[i].remove(function(err, post) {
-                if (err) return next(err);
-
-                res.json({post});
-            })
-        } 
+        res.json({post});
     });
 }
