@@ -8,6 +8,7 @@ var debug = require('debug')('api.mygram.svc.com:app');
 
 const healthRouter = require('./routes/health');
 const usersRouter = require('./routes/users');
+const blogsRouter = require('./routes/blogs');
 
 var app = express();
 
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/healthcheck', healthRouter);
 app.use('/users', usersRouter);
+app.use('/blogs', blogsRouter);
 
 // Connect to MongoDB
 const mongoUri = process.env.MONGO_URI;
