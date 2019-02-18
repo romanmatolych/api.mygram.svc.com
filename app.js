@@ -1,22 +1,21 @@
-var createError = require('http-errors');
-var express = require('express');
-// var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+const debug = require('debug')('api.mygram.svc.com:app');
 
-var mongoose = require('mongoose');
-var debug = require('debug')('api.mygram.svc.com:app');
-
+// Import routers for the app
 const healthRouter = require('./routes/health');
 const usersRouter = require('./routes/users');
 const blogsRouter = require('./routes/blogs');
 
-var app = express();
+const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// app.use(cookieParser());
 
+// Use all needed routers
 app.use('/healthcheck', healthRouter);
 app.use('/users', usersRouter);
 app.use('/blogs', blogsRouter);
@@ -25,7 +24,7 @@ app.use('/blogs', blogsRouter);
 const mongoUri = process.env.MONGO_URI;
 mongoose.connect(mongoUri, {useNewUrlParser: true});
 mongoose.Promise = global.Promise;
-var db = mongoose.connection;
+const db = mongoose.connection;
 db.on('error', console.log.bind(console, 'Mongoose connection error:'));
 db.once('open', function () {
   debug('Mongoose connection opened');
@@ -38,8 +37,10 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+  debug('Error handler: %O', err);
+
   if (res.headersSent) {
-    return next(err)
+    return next(err);
   }
 
   if (req.xhr) {

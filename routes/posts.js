@@ -1,34 +1,30 @@
 const express = require('express');
+
+const PostController = require('../controllers/post-controller');
+const PostValidator = require('../validators/post-validator');
+const {findPost} = require('../middlewares/post-middlewares');
+
 const router = express.Router();
-const createError = require('http-errors');
 
-const postController = require('../controllers/postController');
-const Post = require('../models/post');
+/* Validate and create new post */
+router.post('/', 
+    PostValidator.savePost(),
+    PostController.createNewPost
+);
 
-/* Create new post */
-router.post('/', postController.createNewPost);
-
-router.use('/:index', function(req, res, next) {
-    Post.find({blogId: res.locals.blogId}).sort({createdAt: 1}).exec(function(err, blogPosts) {
-        if (err) return next(err);
-
-        const i = parseInt(req.params.index);
-        if (typeof blogPosts[i] === 'undefined') {
-            return next(createError(404, 'Post Not Found'));
-        } else {
-            res.locals.postId = blogPosts[i]._id;
-            next();
-        } 
-    });
-});
+// Pass the post's id to the next middlewares
+router.use('/:index', findPost);
 
 /* GET post page */
-router.get('/:index', postController.getPostPage);
+router.get('/:index', PostController.getPost);
 
-/* Update existing post */
-router.put('/:index', postController.updatePost);
+/* Update existing post with validation */
+router.put('/:index', 
+    PostValidator.savePost(),    
+    PostController.updatePost
+);
 
 /* Delete existing post */
-router.delete('/:index', postController.deletePost);
+router.delete('/:index', PostController.deletePost);
 
 module.exports = router;
