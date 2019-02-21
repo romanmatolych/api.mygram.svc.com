@@ -21,7 +21,7 @@ class PostController {
             if (err) return next(err);
     
             const i = parseInt(postInd) - 1;
-            if (!Number.isInteger(i) || i < 1) return next(createError(400));
+            if (!Number.isInteger(i) || i < 0) return next(createError(400));
             if (typeof blogPosts[i] === 'undefined') {
                 debug(`Cannot find post at index ${postInd}`);
                 next(createError(404, 'Post Not Found'));
