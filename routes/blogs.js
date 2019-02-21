@@ -3,12 +3,21 @@ const express = require('express');
 const BlogController = require('../controllers/blog-controller');
 const BlogValidator = require('../validators/blog-validator');
 const postsRouter = require('../routes/posts');
-const {checkBlog} = require('../middlewares/post-middlewares');
+const {validateToken, verifyUsersBlog} = require('../middlewares/auth-middlewares');
 
 const router = express.Router();
 
+// Preload a blog from the database
+router.param('blogId', BlogController.findBlog);
+
 /* GET blog page */
-router.get('/:id', BlogController.getBlog);
+router.get('/:blogId', BlogController.getBlog);
+
+// Use routes for posts
+router.use('/:blogId/posts', postsRouter);
+
+// Logged in user is needed for next operations 
+router.use(validateToken);
 
 /* Validate and create new blog */
 router.post('/',
@@ -16,19 +25,16 @@ router.post('/',
     BlogController.createNewBlog
 );
 
-/* Update existing blog + validation */
-router.put('/:id', 
-    BlogValidator.updateBlog(),
-    BlogController.updateBlog
-);
+// Check if logged-in user is modifying his own blog
+router.use('/:blogId', verifyUsersBlog);
 
-/* Delete existing blog */
-router.delete('/:id', BlogController.deleteBlog);
-
-// Check if a blog exists and then use routes for posts
-router.use('/:id/posts', 
-    checkBlog, 
-    postsRouter
-);
+router.route('/:blogId')
+    /* Update existing blog + validation */
+    .put( 
+        BlogValidator.updateBlog(),
+        BlogController.updateBlog
+    )
+    /* Delete existing blog */
+    .delete(BlogController.deleteBlog);
 
 module.exports = router;

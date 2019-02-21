@@ -40,6 +40,10 @@ exports.verifyUser = function(req, res, next) {
     }
 };
 
+/**
+ * Verifies that logged-in user has such a blog 
+ * and lets him modify it
+ */
 exports.verifyUsersBlog = function(req, res, next) {
     const payload = res.locals.payload;
     if (payload && payload.userId) {
