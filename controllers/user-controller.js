@@ -22,7 +22,7 @@ class UserController {
             if (err) return next(err);
             if (user === null) return next(createError(404, 'User Not Found'));
     
-            res.locals.user = user;
+            res.locals.user = user.toObject({virtuals: true});
             next();
         });
     }
@@ -65,7 +65,7 @@ class UserController {
                 if (err) return next(err);
     
                 debug('Created new user %O', newUser);
-                res.redirect(201, newUser.url);
+                res.status(201).json({user: newUser.toObject({virtuals: true})});
             });
         });
     }

@@ -47,7 +47,7 @@ app.use(function(err, req, res, next) {
     return next(err);
   }
 
-  if (req.xhr) {
+  if (req.xhr || req.accepts('application/json')) {
     res.status(err.status || 500).json({error: err});
   } else {
     next(err);

@@ -20,6 +20,9 @@ const blogSchema = new Schema({
         default: 1
     },
     createdAt: {type: Date, default: Date.now}
+}, 
+{
+    virtuals: true
 });
 
 // Relative to the root path to visit the blog
