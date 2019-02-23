@@ -1,23 +1,65 @@
-version: "3.1"
+version: "3.5"
+
 services:
+
   api:
+    depends_on:
+      - mongo
+    networks:
+      - mygramnet
+    build: ${API_PATH}
     environment:
       DEBUG: api.mygram.svc.com:*
-    env_file:
-      - ./.env
-    container_name: api-mygram
+      VIRTUAL_HOST: api.mygram.svc.com
+      VIRTUAL_PORT: ${API_PORT}
+    container_name: api
     volumes:
-      - .:/usr/src/api
+      - ${API_PATH}:/usr/src/api
     stdin_open: true
     tty: true
-    ports:
-      - "${PORT}:${PORT}"
+    expose:
+      - ${API_PORT}
     working_dir: /usr/src/api
     image: node:8.15-alpine
     command: npm start
-    depends_on:
-      - mongo
+
+  web:
+    environment:
+      - VIRTUAL_HOST=mygram.com
+      - VIRTUAL_PORT=${WEB_PORT}
+    expose:
+      - ${WEB_PORT}
+    networks:
+      - mygramnet
+    container_name: web
+    build: ${WEB_PATH}
+    volumes:
+      - ${WEB_PATH}:/usr/src/web
+    stdin_open: true
+    tty: true
+    working_dir: /usr/src/web
+    image: node:8.15-alpine
+    command: npm start
+
   mongo:
+    container_name: db
     image: mongo
     ports:
       - "27017:27017"
+    networks:
+      - mygramnet
+
+  proxy:
+    container_name: proxy
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - mygramnet
+
+networks:
+  mygramnet:
+    driver: bridge
+    name: mygramnet
