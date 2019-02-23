@@ -8,10 +8,13 @@ const debug = require('debug')('api.mygram.svc.com:app');
 const healthRouter = require('./routes/health');
 const usersRouter = require('./routes/users');
 const blogsRouter = require('./routes/blogs');
+const authRouter = require('./routes/auth');
 
 const app = express();
 
-app.use(logger('dev'));
+if (app.get('env') === 'development') {
+  app.use(logger('dev'));
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -19,6 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/healthcheck', healthRouter);
 app.use('/users', usersRouter);
 app.use('/blogs', blogsRouter);
+app.use(authRouter);
 
 // Connect to MongoDB
 const mongoUri = process.env.MONGO_URI;
@@ -43,7 +47,7 @@ app.use(function(err, req, res, next) {
     return next(err);
   }
 
-  if (req.xhr) {
+  if (req.xhr || req.accepts('application/json')) {
     res.status(err.status || 500).json({error: err});
   } else {
     next(err);

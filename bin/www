@@ -7,10 +7,10 @@
 const http = require('http');
 const debug = require('debug')('api.mygram.svc.com:server');
 
-const app = require('../app');
-
 // Read .env file, assign it to process.env
 require('dotenv').config();
+
+const app = require('../app');
 
 /**
  * Get port from environment and store in Express.

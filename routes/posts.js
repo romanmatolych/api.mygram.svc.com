@@ -2,9 +2,18 @@ const express = require('express');
 
 const PostController = require('../controllers/post-controller');
 const PostValidator = require('../validators/post-validator');
-const {findPost} = require('../middlewares/post-middlewares');
+const {validateToken, verifyUsersBlog} = require('../middlewares/auth-middlewares');
 
-const router = express.Router();
+const router = express.Router({mergeParams: true}); // Get params from the parent route too
+
+// Pass the post to the next middlewares
+router.param('postInd', PostController.findPost);
+
+/* GET post page */
+router.get('/:postInd', PostController.getPost);
+
+// Token required next
+router.use(validateToken);
 
 /* Validate and create new post */
 router.post('/', 
@@ -12,19 +21,17 @@ router.post('/',
     PostController.createNewPost
 );
 
-// Pass the post's id to the next middlewares
-router.use('/:index', findPost);
+// Check if user is creating new posts in his own blog 
+router.use('/:postInd', verifyUsersBlog);
 
-/* GET post page */
-router.get('/:index', PostController.getPost);
-
-/* Update existing post with validation */
-router.put('/:index', 
-    PostValidator.savePost(),    
-    PostController.updatePost
-);
-
-/* Delete existing post */
-router.delete('/:index', PostController.deletePost);
+// Use a single route to handle various HTTP methods 
+router.route('/:postInd')
+    /* Update existing post with validation */
+    .put(
+        PostValidator.savePost(),    
+        PostController.updatePost
+    )
+    /* Delete existing post */
+    .delete(PostController.deletePost);
 
 module.exports = router;
