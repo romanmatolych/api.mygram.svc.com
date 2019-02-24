@@ -25,6 +25,7 @@ services:
 
   web:
     environment:
+      - PORT=${WEB_PORT}
       - VIRTUAL_HOST=mygram.com
       - VIRTUAL_PORT=${WEB_PORT}
     expose:
