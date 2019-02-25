@@ -6,34 +6,19 @@ RESTfull service for [mygram](https://gitlab.com/romanmatolych/mygram.com)
 
 - [Docker](https://www.docker.com/)
 
-## Requirements
-
-The project contains `docker-compose.yml` file with composition of all parts needed to run **mygram** web application. Projects' paths are hardcoded in `.env` file. It is supposed that both api.mygram.svc.com and mygram.com folders are located in the same parent directory. Or you can change corresponding variables in the environment file. Also `hosts` file on your machine must include:
-
-```
-127.0.0.1   api.mygram.svc.com
-127.0.0.1   mygram.com
-```
-
 ## Installation
 
-To launch the whole application from here use:
+To launch the application with MongoDB:
 
 ```bash
 docker-compose up
 ```
 
-You can now see all logs from the containers in the terminal.
-
-In the end, to remove all the information including data volume of the database, containers, network etc.:
+In the end, if you want to remove all the information including data volume of the database, containers etc. use:
 
 ```bash
 docker-compose down 
 ```
-
-## Usage
-
-You can now view mygram.com in the browser.
 
 ## API
 
