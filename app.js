@@ -3,6 +3,7 @@ const express = require('express');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const debug = require('debug')('api.mygram.svc.com:app');
+const cors = require('cors');
 
 // Import routers for the app
 const healthRouter = require('./routes/health');
@@ -17,6 +18,8 @@ if (app.get('env') === 'development') {
 }
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+// Enable all CORS reqs
+app.use(cors());
 
 // Use all needed routers
 app.use('/healthcheck', healthRouter);

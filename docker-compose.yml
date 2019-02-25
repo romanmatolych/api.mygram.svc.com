@@ -1,11 +1,13 @@
-version: "3.1"
+version: "3.5"
+
 services:
+
   api:
+    depends_on:
+      - mongo
     environment:
       DEBUG: api.mygram.svc.com:*
-    env_file:
-      - ./.env
-    container_name: api-mygram
+    container_name: api
     volumes:
       - .:/usr/src/api
     stdin_open: true
@@ -15,9 +17,9 @@ services:
     working_dir: /usr/src/api
     image: node:8.15-alpine
     command: npm start
-    depends_on:
-      - mongo
+
   mongo:
+    container_name: db
     image: mongo
     ports:
       - "27017:27017"
