@@ -40,34 +40,28 @@ class BlogController {
         // Extract validation errors from a request
         const errors = validationResult(req);
         
-        // Object of a new blog with entered information
-        const blog = {
-            userId: req.body.userId,
-            name: req.body.name
-        };
+        const payload = res.locals.payload;
+        if (payload && payload.userId) {
+            // Object of a new blog with entered information
+            const blog = {
+                userId: payload.userId,
+                name: req.body.name
+            };
 
-        // Check if such a user exists before creating new blog of him
-        User.findById(req.body.userId, function(err, author) {
-            if (err) return next(err);
-            if (author === null) return next(createError(404, 'User Not Found'));
-
-            const payload = res.locals.payload;
-            if (payload && payload.userId === blog.userId) {
-                if (!errors.isEmpty()) {
-                    debug('Blog creation validation errors: %j', errors.array());
-                    return res.status(400).json({errors: errors.array(), blog});
-                }
-    
-                Blog.create(blog, function(err, newBlog) {
-                    if (err) return next(err);
-        
-                    debug('Created new blog %O', newBlog);
-                    res.redirect(201, newBlog.url);
-                });
-            } else {
-                next(createError(403));
+            if (!errors.isEmpty()) {
+                debug('Blog creation validation errors: %j', errors.array());
+                return res.status(400).json({errors: errors.array(), blog});
             }
-        });
+
+            Blog.create(blog, function(err, newBlog) {
+                if (err) return next(err);
+    
+                debug('Created new blog %O', newBlog);
+                res.status(201).json({blog: newBlog});
+            });
+        } else {
+            next(createError(401));
+        }
     }
 
     static updateBlog(req, res, next) {
@@ -86,7 +80,7 @@ class BlogController {
             if (err) return next(err);
 
             debug(`Updated blog ${savedBlog._id}`);
-            res.redirect(200, savedBlog.url);
+            res.status(200).json({blog: savedBlog});
         });
     }
 

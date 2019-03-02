@@ -90,6 +90,11 @@ Required:
     - Code: 500 <br />
     Content: `{error}`
 
+    OR
+
+    - Code: 401 <br />
+    Content: `{error}`
+
 ### **Create new user**
 
 - URL

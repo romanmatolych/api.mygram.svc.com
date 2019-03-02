@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const createError = require('http-errors');
 const Blog = require('../models/blog');
+const {Types: {ObjectId}} = require('mongoose');
+const User = require('../models/user');
 
 /**
  * Reads Bearer token, verifies it and passes the payload further
@@ -19,8 +21,17 @@ exports.validateToken = function(req, res, next) {
         jwt.verify(token, secret, verifyOptions, function(err, payload) {
             if (err) return next(err);
 
-            res.locals.payload = payload;
-            next();
+            const userId = payload.userId;
+            if (!ObjectId.isValid(userId)) {
+                return next(createError(400));
+            }
+            User.findById(userId, function(err, user) {
+                if (err) return next(err);
+                if (user === null) return next(createError(404));
+
+                res.locals.payload = payload;
+                next();
+            });
         });
     } else {
         next(createError(401));

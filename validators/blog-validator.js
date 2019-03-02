@@ -7,12 +7,8 @@ class BlogValidator {
     
     static createNewBlog() {
         return [
-            body('userId')
-                .not().isEmpty()
-                .trim()
-                .isMongoId(),
             body('name')
-                .not().isEmpty()
+                .not().isEmpty().withMessage('Empty name')
                 .trim()
                 .escape(),
         ];
@@ -21,7 +17,7 @@ class BlogValidator {
     static updateBlog() {
         return [
             body('name')
-                .not().isEmpty()
+                .not().isEmpty().withMessage('Empty name')
                 .trim()
                 .escape(),
         ];

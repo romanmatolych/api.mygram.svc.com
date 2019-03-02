@@ -53,7 +53,7 @@ class AuthController {
                         });
                     });
                 } else {
-                    next(createError(401));
+                    next(createError(400, "Incorrect login information"));
                 }
             });
         });
