@@ -4,6 +4,11 @@ const bcrypt = require('bcryptjs');
 // Salt length to generate
 const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS);
 
+const schemaOptions = {
+    toObject: {virtuals: true},
+    toJSON: {virtuals: true},
+};
+
 // Create a schema that defines the shape of users
 const userSchema = new mongoose.Schema({
     username: {
@@ -25,7 +30,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {type: String, required: true},
     password: {type: String, required: true}
-});
+}, schemaOptions);
 
 userSchema
     .virtual('fullName')

@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+const schemaOptions = {
+    toObject: {virtuals: true},
+    toJSON: {virtuals: true},
+};
+
 // Create a schema that defines the shape of blogs
 const blogSchema = new Schema({
     // Owner of the blog
@@ -20,10 +25,7 @@ const blogSchema = new Schema({
         default: 1
     },
     createdAt: {type: Date, default: Date.now}
-}, 
-{
-    virtuals: true
-});
+}, schemaOptions);
 
 // Relative to the root path to visit the blog
 blogSchema

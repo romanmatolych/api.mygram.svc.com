@@ -12,8 +12,8 @@ class PostValidator {
                 .trim()
                 .escape(),
             body('imgUrl')
-                .not().isEmpty()
-                .isURL(),
+                .not().isEmpty().withMessage('Empty URL')
+                .isURL().withMessage('Invalid URL'),
         ];
     }
 

@@ -9,9 +9,9 @@ class AuthValidator {
         return [
             body('username')
                 .trim()
-                .exists({checkFalsy: true}),
+                .exists({checkFalsy: true}).withMessage('No username'),
             body('password')
-                .exists({checkFalsy: true}),
+                .exists({checkFalsy: true}).withMessage('No password'),
         ];
     }
 

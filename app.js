@@ -46,6 +46,12 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   debug('Error handler: %O', err);
 
+  // Handle errors from MongoDB
+  if (err.name === "MongoError") {
+    err = createError(500, 
+      (err.code === 11000 ? "Document already exists" : "Database error"));
+  }
+
   if (res.headersSent) {
     return next(err);
   }

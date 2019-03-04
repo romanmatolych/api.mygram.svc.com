@@ -8,33 +8,33 @@ class UserValidator {
     static createNewUser() {
         return [
             body('username')
-                .isAlphanumeric()
-                .isLength({min: 4})
+                .isAlphanumeric().withMessage('Username must be alphanumeric')
+                .isLength({min: 4}).withMessage('Too short username')
                 .trim(),
             body(['firstName', 'lastName'])
-                .not().isEmpty()
+                .not().isEmpty().withMessage('Empty name')
                 .trim()
                 .escape(),
             body('email')
-                .isEmail()
+                .isEmail().withMessage('Invalid email')
                 .normalizeEmail(),
             body('password')
-                .not().isEmpty(),
+                .not().isEmpty().withMessage('Empty password'),
         ];
     }
 
     static updateUser() {
         return [
             body('username')
-                .isAlphanumeric()
-                .isLength({min: 4})
+                .isAlphanumeric().withMessage('Username must be alphanumeric')
+                .isLength({min: 4}).withMessage('Too short username')
                 .trim(),
             body(['firstName', 'lastName'])
-                .not().isEmpty()
+                .not().isEmpty().withMessage('Empty name')
                 .trim()
                 .escape(),
             body('email')
-                .isEmail()
+                .isEmail().withMessage('Invalid email')
                 .normalizeEmail(),
         ];
     }
