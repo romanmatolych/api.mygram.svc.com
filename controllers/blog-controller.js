@@ -17,13 +17,15 @@ class BlogController {
         // Validate blogId
         if (!ObjectId.isValid(blogId)) return next(createError(400));
         // Look for a given blog
-        Blog.findById(blogId, function(err, blog) {
-            if (err) return next(err);
-            if (blog === null) return next(createError(404, 'Blog Not Found'));
+        Blog.findById(blogId)
+            .populate('userId')
+            .exec(function(err, blog) {
+                if (err) return next(err);
+                if (blog === null) return next(createError(404, 'Blog Not Found'));
 
-            res.locals.blog = blog;
-            next();
-        });
+                res.locals.blog = blog;
+                next();
+            });
     }
 
     static getBlog(req, res, next) {

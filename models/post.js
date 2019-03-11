@@ -18,21 +18,25 @@ const postSchema = new Schema({
     },
     desc: String,
     imgUrl: {type: String, required: true},
-    createdAt: {type: Date, default: Date.now}
+    createdAt: {type: Date, default: Date.now},
+    ind: Number
 }, schemaOptions);
 
 // Calculate an index for a post to use in its URL by sorting all blog's posts in ascending order
 // by their date. Takes an error-first callback function
 postSchema.methods.getIndex = function(callback) {
-    const self = this;
-    this.model('Post').find({blogId: this.blogId}).sort({createdAt: 1}).exec(function(err, blogPosts) {
+    this.model('Post').find({blogId: this.blogId}).sort({createdAt: 1}).exec((err, blogPosts) => {
         if (err) return callback(err);
 
-        const index = blogPosts.findIndex(blog => blog._id.equals(self._id));
+        const index = blogPosts.findIndex(post => post._id.equals(this._id));
 
-        debug(`Calculated index ${index} for post ${self._id}`);
+        debug(`Calculated index ${index} for post ${this._id}`);
+        this.ind = index;
+        this.save(function(err) {
+            if (err) return callback(err);
 
-        callback(null, index);
+            callback(null, index);    
+        });
     });
 };
 
