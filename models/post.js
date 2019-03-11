@@ -3,6 +3,11 @@ const debug = require('debug')('api.mygram.svc.com:post-model');
 
 const Schema = mongoose.Schema;
 
+const schemaOptions = {
+    toObject: {virtuals: true},
+    toJSON: {virtuals: true}
+}
+
 // Create a schema that defines the shape of posts
 const postSchema = new Schema({
     // A blog that the post belongs to
@@ -14,7 +19,7 @@ const postSchema = new Schema({
     desc: String,
     imgUrl: {type: String, required: true},
     createdAt: {type: Date, default: Date.now}
-});
+}, schemaOptions);
 
 // Calculate an index for a post to use in its URL by sorting all blog's posts in ascending order
 // by their date. Takes an error-first callback function

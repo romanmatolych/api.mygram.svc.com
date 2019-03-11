@@ -89,7 +89,7 @@ class UserController {
             if (err) return next(err);
 
             debug(`Updated user ${savedUser._id}`);
-            res.redirect(200, savedUser.url);
+            res.json({user: savedUser});
         });
     }
 

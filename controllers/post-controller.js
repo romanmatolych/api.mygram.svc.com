@@ -68,7 +68,9 @@ class PostController {
                     if (i === -1) return next(createError(500));
 
                     debug('Created new post at %d index, %O', i, newPost);
-                    res.redirect(201, newPost.baseUrl + `/${i + 1}`);
+                    newPost = newPost.toObject();
+                    newPost.url = `${newPost.baseUrl}/${i + 1}`;
+                    res.status(201).json({post: newPost});
                 });
             });
         } else {
