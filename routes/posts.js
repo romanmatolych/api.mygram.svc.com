@@ -9,6 +9,9 @@ const router = express.Router({mergeParams: true}); // Get params from the paren
 // Pass the post to the next middlewares
 router.param('postInd', PostController.findPost);
 
+// Route for pagination
+router.get('/', PostController.getPage);
+
 /* GET post page */
 router.get('/:postInd', PostController.getPost);
 

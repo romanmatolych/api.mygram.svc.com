@@ -51,7 +51,7 @@ class PostController {
 
         const payload = res.locals.payload,
             blog = res.locals.blog;
-        if (payload && payload.userId == blog.userId) {
+        if (payload && payload.userId == blog.userId._id) {
             // Validate blogId
             if (!ObjectId.isValid(post.blogId)) return next(createError(400));
             if (!errors.isEmpty()) {
@@ -94,7 +94,7 @@ class PostController {
             if (err) return next(err);
 
             debug(`Updated post ${savedPost._id}`);
-            res.redirect(200, req.originalUrl);
+            res.json({post: savedPost});
         });
     }
 
@@ -106,6 +106,49 @@ class PostController {
     
             debug(`Deleted post ${removedPost._id}`);
             res.json({post: removedPost});
+        });
+    }
+
+    static getPage(req, res, next) {
+        const page = parseInt(req.query.p),
+            perPage = 5,
+            desc = req.query.desc;
+        let sortBy = req.query.sort_by;
+        
+        if (sortBy) {
+            if ((!sortBy.startsWith('+') && !sortBy.startsWith('-')) || 
+                !Post.schema.path(sortBy.slice(1)))
+                return next(createError(400));
+            if (sortBy.startsWith('+')) sortBy = sortBy.slice(1);
+        } else {
+            sortBy = '-createdAt';
+        }
+        
+        const filters = {
+            blogId: req.params.blogId
+        };
+        if (desc && desc.length > 0) {
+            filters.desc = new RegExp(decodeURIComponent(desc), "i");
+        }
+
+        Post.estimatedDocumentCount(function(err, postsNum) {
+            if (err) return next(err);
+            const pages = Math.ceil(postsNum / perPage);
+            if (!page || page <= 0 || page > pages) return next(createError(400));
+
+            Post.find(filters)
+                .skip(perPage * (page - 1))
+                .limit(perPage)
+                .sort(sortBy)
+                .exec(function(err, posts) {
+                    if (err) return next(err);
+
+                    res.json({
+                        pages,
+                        current: page,
+                        posts
+                    });
+                });
         });
     }
 
