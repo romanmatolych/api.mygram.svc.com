@@ -110,24 +110,29 @@ class PostController {
     }
 
     static getPage(req, res, next) {
+        // Get all query parameters
         const page = parseInt(req.query.p),
-            perPage = 5,
             desc = req.query.desc;
         let sortBy = req.query.sort_by;
+        // Number of posts on every page
+        const perPage = 5;
         
         if (sortBy) {
+            // Check for '+path' or '-path' format for sorting
             if ((!sortBy.startsWith('+') && !sortBy.startsWith('-')) || 
-                !Post.schema.path(sortBy.slice(1)))
+                !Post.schema.path(sortBy.slice(1))) // if such a path exists in a schema
                 return next(createError(400));
             if (sortBy.startsWith('+')) sortBy = sortBy.slice(1);
         } else {
             sortBy = '-createdAt';
         }
         
+        // Conditions for search
         const filters = {
             blogId: req.params.blogId
         };
         if (desc && desc.length > 0) {
+            // Filter posts by searching terms in post description
             filters.desc = new RegExp(decodeURIComponent(desc), "i");
         }
 

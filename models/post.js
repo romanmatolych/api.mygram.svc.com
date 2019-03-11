@@ -28,7 +28,7 @@ postSchema.methods.getIndex = function(callback) {
     this.model('Post').find({blogId: this.blogId}).sort({createdAt: 1}).exec((err, blogPosts) => {
         if (err) return callback(err);
 
-        const index = blogPosts.findIndex(blog => blog._id.equals(this._id));
+        const index = blogPosts.findIndex(post => post._id.equals(this._id));
 
         debug(`Calculated index ${index} for post ${this._id}`);
         this.ind = index;
