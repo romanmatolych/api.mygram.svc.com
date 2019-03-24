@@ -20,6 +20,14 @@ In the end, if you want to remove all the information including data volume of t
 docker-compose down 
 ```
 
+## TODO list
+
+1. Security (https, Helmet, refresh token etc.), compression;
+2. Refactoring;
+3. Unit testing;
+4. Extended logging e.g., with winston;
+5. Swagger UI.
+
 ## API
 
 ### **Healthcheck**
