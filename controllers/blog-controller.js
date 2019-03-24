@@ -5,7 +5,6 @@ const {Types: {ObjectId}} = require('mongoose');
 
 const Blog = require('../models/blog');
 const Post = require('../models/post');
-const User = require('../models/user');
 
 /**
  * Class representing a controller with static functions that process 
@@ -77,7 +76,6 @@ class BlogController {
         // Update object
         const blog = res.locals.blog;
         blog.name = req.body.name;
-            
         blog.save(function(err, savedBlog) {
             if (err) return next(err);
 

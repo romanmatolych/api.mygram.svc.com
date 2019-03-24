@@ -23,28 +23,30 @@ const postSchema = new Schema({
 }, schemaOptions);
 
 // Calculate an index for a post to use in its URL by sorting all blog's posts in ascending order
-// by their date. Takes an error-first callback function
-postSchema.methods.getIndex = function(callback) {
-    this.model('Post').find({blogId: this.blogId}).sort({createdAt: 1}).exec((err, blogPosts) => {
-        if (err) return callback(err);
+// by their date before saving.
+postSchema.pre('save', function(next) {
+    if (this.isNew) {
+        this.model('Post').find({blogId: this.blogId}).sort({createdAt: 1}).exec((err, blogPosts) => {
+            if (err) return next(err);
 
-        const index = blogPosts.findIndex(post => post._id.equals(this._id));
-
-        debug(`Calculated index ${index} for post ${this._id}`);
-        this.ind = index;
-        this.save(function(err) {
-            if (err) return callback(err);
-
-            callback(null, index);    
+            if (blogPosts.every(post => post.createdAt < this.createdAt)) {
+                this.ind = blogPosts.length;
+                debug(`Calculated index ${this.ind} for post ${this._id}`);
+                next();
+            } else {
+                next(new Error("Error calculating post's index"));
+            }
         });
-    });
-};
+    } else {
+        next();
+    }
+});
 
-// Relative to the root path for a post without it's '/{id}' at the end of it
+// Path for a post that is relative to the root
 postSchema
-    .virtual('baseUrl')
+    .virtual('url')
     .get(function() {
-        return `/blogs/${this.blogId}/posts`;
+        return `/blogs/${this.blogId}/posts/${this.ind + 1}`;
     });
 
 module.exports = mongoose.model('Post', postSchema);

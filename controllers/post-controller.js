@@ -62,16 +62,8 @@ class PostController {
             Post.create(post, function(err, newPost) {
                 if (err) return next(err);
 
-                // Calculate index of a new post for its URL
-                newPost.getIndex(function(err, i) {
-                    if (err) return next(err);
-                    if (i === -1) return next(createError(500));
-
-                    debug('Created new post at %d index, %O', i, newPost);
-                    newPost = newPost.toObject();
-                    newPost.url = `${newPost.baseUrl}/${i + 1}`;
-                    res.status(201).json({post: newPost});
-                });
+                debug('Created new post %O', newPost);
+                res.status(201).json({post: newPost});
             });
         } else {
             next(createError(403));
@@ -109,6 +101,7 @@ class PostController {
         });
     }
 
+    // Paginate posts list
     static getPage(req, res, next) {
         // Get all query parameters
         const page = parseInt(req.query.p),
@@ -120,7 +113,7 @@ class PostController {
         if (sortBy) {
             // Check for '+path' or '-path' format for sorting
             if ((!sortBy.startsWith('+') && !sortBy.startsWith('-')) || 
-                !Post.schema.path(sortBy.slice(1))) // if such a path exists in a schema
+                !Post.schema.path(sortBy.slice(1))) // if such a path doesn't exist in the schema
                 return next(createError(400));
             if (sortBy.startsWith('+')) sortBy = sortBy.slice(1);
         } else {

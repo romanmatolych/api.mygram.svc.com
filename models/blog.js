@@ -20,14 +20,10 @@ const blogSchema = new Schema({
         required: true,
         trim: true
     },
-    themeId: { // TODO: Implement themes
-        type: Number,
-        default: 1
-    },
     createdAt: {type: Date, default: Date.now}
 }, schemaOptions);
 
-// Relative to the root path to visit the blog
+// Path for a blog that is relative to the root
 blogSchema
     .virtual('url')
     .get(function() {

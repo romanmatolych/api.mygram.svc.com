@@ -16,6 +16,7 @@ class PostValidator {
                 .not().isEmpty().withMessage('Empty URL')
                 .isURL().withMessage('Invalid URL')
                 .custom(value => {
+                    // Check if image exists
                     return fetch(value, {method: "HEAD"}).then(res => {
                         if (!res.ok || !res.headers.get('Content-Type').startsWith('image/'))
                             return Promise.reject('Invalid content');

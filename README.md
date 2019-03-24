@@ -1,6 +1,6 @@
 # api.mygram.svc.com
 
-RESTfull service for [mygram](https://gitlab.com/romanmatolych/mygram.com)
+RESTfull service of a microblogging system for photos.
 
 ## Prerequisites
 

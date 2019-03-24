@@ -48,7 +48,7 @@ class AuthController {
                         if (err) return next(err);
 
                         res.status(200).json({
-                            user: user.toObject({virtuals: true}),
+                            user,
                             token
                         });
                     });

@@ -57,6 +57,21 @@ app.use(function(err, req, res, next) {
   }
 
   if (req.xhr || req.accepts('application/json')) {
+    // Make an error serializable into a plain object
+    if (!err.toJSON) {
+      Object.defineProperty(err, 'toJSON', {
+          value: function () {
+              const data = {};
+              Object.getOwnPropertyNames(this).forEach(function(key) {
+                  data[key] = this[key];
+              }, this);
+              return data;
+          },
+          configurable: true,
+          writable: true,
+          enumerable: false
+      });
+    }
     res.status(err.status || 500).json({error: err});
   } else {
     next(err);

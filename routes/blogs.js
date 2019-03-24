@@ -16,7 +16,7 @@ router.get('/:blogId', BlogController.getBlog);
 // Use routes for posts
 router.use('/:blogId/posts', postsRouter);
 
-// Logged in user is needed for next operations 
+// A user must be logged in for next operations 
 router.use(validateToken);
 
 /* Validate and create new blog */

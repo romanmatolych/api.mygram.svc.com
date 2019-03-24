@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const createError = require('http-errors');
-const Blog = require('../models/blog');
 const {Types: {ObjectId}} = require('mongoose');
+
+const Blog = require('../models/blog');
 const User = require('../models/user');
 
 /**
@@ -22,6 +23,7 @@ exports.validateToken = function(req, res, next) {
             if (err) return next(err);
 
             const userId = payload.userId;
+            // Verify user's id
             if (!ObjectId.isValid(userId)) {
                 return next(createError(400));
             }
